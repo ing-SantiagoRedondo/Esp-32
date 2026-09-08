@@ -3,49 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel — Decodificador santiago123</title>
+<title>Decoder · santiago123</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="rack">
+<div class="app">
 
-  <div class="rack-label">
-    <h1>Panel de control — Decodificador</h1>
-    <span class="id">grupo/santiago123</span>
+  <header class="topbar">
+    <div class="icon-badge" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="5" stroke="currentColor" stroke-width="2"/>
+        <path d="M20 4V13M20 27V36M4 20H13M27 20H36M9 9L15 15M31 31L25 25M31 9L25 15M9 31L15 25"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="status-pill">
+      <span class="status-dot" id="led"></span>
+      <span id="estado-texto">Iniciando…</span>
+    </div>
+  </header>
+
+  <div class="title-row">
+    <h1>Decodificador</h1>
+    <span class="tag">grupo/santiago123</span>
   </div>
 
-  <div class="panel">
+  <div class="screen">
+    <div class="digit" id="display_num">—</div>
+  </div>
 
-    <div class="status-strip">
-      <div class="led" id="led"></div>
-      <div id="estado-texto">Iniciando…</div>
-    </div>
+  <div class="bits-row" id="bits-row">
+    <div class="bit">0</div>
+    <div class="bit">0</div>
+    <div class="bit">0</div>
+    <div class="bit">0</div>
+  </div>
 
-    <div class="readout">
-      <div class="digit" id="display_num">—</div>
-      <div class="bits-row" id="bits-row">
-        <div class="bit">0</div>
-        <div class="bit">0</div>
-        <div class="bit">0</div>
-        <div class="bit">0</div>
+  <div class="origen-pill">Origen&nbsp;· <span id="origen">esperando datos</span></div>
+
+  <div class="dial-wrap">
+    <div class="dial" id="teclado">
+      <div class="dial-hub" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L4 9V21H20V9L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="origen">ORIGEN: <span id="origen">esperando datos</span></div>
     </div>
+  </div>
 
-    <div class="keypad-title">ENVIAR VALOR AL DISPLAY FÍSICO</div>
-    <div class="keypad" id="teclado"></div>
-
-    <div class="log-title">
-      <span>REGISTRO DE EVENTOS</span>
-      <button id="clear-log">limpiar</button>
+  <div class="log-section">
+    <div class="log-header">
+      <span>Registro de eventos</span>
+      <button id="clear-log" class="pill-btn">Limpiar</button>
     </div>
     <div class="console" id="console"></div>
-
   </div>
-
-  <div class="footnote">broker.hivemq.com · wss:8884</div>
 
 </div>
 

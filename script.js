@@ -10,7 +10,7 @@ const origenEl   = document.getElementById("origen");
 const ledEl      = document.getElementById("led");
 const estadoEl   = document.getElementById("estado-texto");
 const consoleEl  = document.getElementById("console");
-const teclado    = document.getElementById("teclado");
+const dial       = document.getElementById("teclado");
 
 function horaActual(){
   const d = new Date();
@@ -28,22 +28,30 @@ function log(mensaje, tipo){
 document.getElementById("clear-log").onclick = () => { consoleEl.innerHTML = ""; };
 
 function setLed(estado){
-  ledEl.className = "led";
+  ledEl.className = "status-dot";
   if (estado === "ok")    ledEl.classList.add("on-teal");
   if (estado === "error") ledEl.classList.add("on-red");
   if (estado === "wait")  ledEl.classList.add("on-amber");
 }
 
-// ---- Generar teclado 1..9 + 0 en orden telefónico ----
-for (let i = 1; i <= 10; i++){
-  const numero = i === 10 ? 0 : i;
+// ---- Generar dial circular: 1..9 en sentido horario y 0 al final (estilo disco rotativo) ----
+const ORDEN_DIAL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+const RADIO = 108; // px, distancia del centro del dial a cada botón
+const TOTAL = ORDEN_DIAL.length;
+
+ORDEN_DIAL.forEach((numero, i) => {
+  const angulo = (i / TOTAL) * 2 * Math.PI - Math.PI / 2; // empieza arriba (12 en punto)
+  const x = RADIO * Math.cos(angulo);
+  const y = RADIO * Math.sin(angulo);
+
   const btn = document.createElement("button");
-  btn.className = "key";
-  if (numero === 0) btn.classList.add("key-zero");
+  btn.className = "dial-btn";
   btn.textContent = numero;
+  btn.style.left = `calc(50% + ${x}px - 26px)`;
+  btn.style.top  = `calc(50% + ${y}px - 26px)`;
   btn.onclick = () => enviarComando(numero, btn);
-  teclado.appendChild(btn);
-}
+  dial.appendChild(btn);
+});
 
 // ============================================================
 // CLIENTE MQTT (WebSockets sobre TLS — puerto 8884 de HiveMQ)
@@ -82,6 +90,12 @@ client.onMessageArrived = (message) => {
 
       origenEl.textContent = "DIP switch";
       log(`RX ${message.destinationName} → ${binario},${decimalStr}`, "rx");
+
+      // El valor vino del hardware, no del teclado: limpiar marcado previo
+      if (ultimoBotonEnviado){
+        ultimoBotonEnviado.classList.remove("sent");
+        ultimoBotonEnviado = null;
+      }
     } else {
       log("RX payload inválido: " + message.payloadString, "err");
     }
@@ -109,6 +123,8 @@ client.connect({
 // ============================================================
 // ENVIAR COMANDO AL ESP32
 // ============================================================
+let ultimoBotonEnviado = null;
+
 function enviarComando(numero, btnRef){
   if (numero < 0 || numero > 9) return;
 
@@ -122,8 +138,13 @@ function enviarComando(numero, btnRef){
     log(`TX ${TOPIC_CONTROL} → ${numero}`, "tx");
 
     if (btnRef){
+      // Deja este botón "hundido" hasta que se envíe otro
+      // comando o llegue un valor nuevo del DIP switch
+      if (ultimoBotonEnviado && ultimoBotonEnviado !== btnRef){
+        ultimoBotonEnviado.classList.remove("sent");
+      }
       btnRef.classList.add("sent");
-      setTimeout(() => btnRef.classList.remove("sent"), 250);
+      ultimoBotonEnviado = btnRef;
     }
   } catch (e) {
     log("Error al enviar: " + e.message, "err");
