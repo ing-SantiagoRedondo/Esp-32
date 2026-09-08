@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — Decodificador santiago123</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="rack">
+
+  <div class="rack-label">
+    <h1>Panel de control — Decodificador</h1>
+    <span class="id">grupo/santiago123</span>
+  </div>
+
+  <div class="panel">
+
+    <div class="status-strip">
+      <div class="led" id="led"></div>
+      <div id="estado-texto">Iniciando…</div>
+    </div>
+
+    <div class="readout">
+      <div class="digit" id="display_num">—</div>
+      <div class="bits-row" id="bits-row">
+        <div class="bit">0</div>
+        <div class="bit">0</div>
+        <div class="bit">0</div>
+        <div class="bit">0</div>
+      </div>
+      <div class="origen">ORIGEN: <span id="origen">esperando datos</span></div>
+    </div>
+
+    <div class="keypad-title">ENVIAR VALOR AL DISPLAY FÍSICO</div>
+    <div class="keypad" id="teclado"></div>
+
+    <div class="log-title">
+      <span>REGISTRO DE EVENTOS</span>
+      <button id="clear-log">limpiar</button>
+    </div>
+    <div class="console" id="console"></div>
+
+  </div>
+
+  <div class="footnote">broker.hivemq.com · wss:8884</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
